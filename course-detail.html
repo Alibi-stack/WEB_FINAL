@@ -1,134 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Course: WEB Technologies — Znanija Land</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="/upgrade.css" />
-    <link rel="stylesheet" href="css/upgrade.css?v=2" />
-  </head>
 
-  <body>
-    <header class="header">
-      <div class="container nav">
-        <a class="brand" href="index.html"
-          ><span class="logo" aria-hidden="true"></span> Znanija Land</a
-        >
-        <nav class="menu">
-          <a href="index.html">Home</a>
-          <a href="courses.html">Courses</a>
-          <a class="active" href="course-detail.html">Course</a>
-          <a href="about.html">About</a>
-        </nav>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Course: WEB Technologies — Znanija Land</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/upgrade.css" />
+  <link rel="stylesheet" href="css/upgrade.css?v=2" />
+  <link rel="stylesheet" href="css/dark-overrides.css" />
+  <script>
+    // Apply saved theme early to avoid flash of incorrect theme
+    try {
+      if (localStorage.getItem('site-theme') === 'dark') document.documentElement.classList.add('dark');
+    } catch (e) {}
+  </script>
+</head>
+
+<body>
+  <!-- Preloader shown while page assets load -->
+  <div id="preloader" class="preloader" aria-hidden="false">
+    <div class="preloader-inner">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="preloader-text">Znanija Land</div>
+    </div>
+  </div>
+  <header class="header">
+    <div class="container nav">
+      <a class="brand" href="index.html"><span class="logo" aria-hidden="true"></span> Znanija Land</a>
+      <nav class="menu">
+        <a href="index.html">Home</a>
+        <a href="courses.html">Courses</a>
+        <a class="active" href="course-detail.html">Course</a>
+        <a href="about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button id="registerBtn" class="cta secondary">Register</button>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <main class="section">
-      <div class="container">
-        <h1 style="margin-top: 0">WEB Technologies</h1>
-        <div class="course-description">
-          <p>This is a brief description of the course.</p>
+  <main class="section">
+    <div class="container">
+      <div class="time-theme-controls">
+        <button id="timeButton" class="control-btn">Show Current Time</button>
+        <button id="themeToggle" class="control-btn" aria-pressed="false">Toggle Theme</button>
+        <div id="timeDisplay" aria-live="polite" class="time-output" aria-hidden="false"></div>
+      </div>
+      <h1 style="margin-top: 0">WEB Technologies</h1>
+      <div class="course-description">
+        <p>This is a brief description of the course.</p>
 
-          <!-- Кнопка для показа дополнительной информации -->
-          <button id="readMoreBtn">Read More</button>
+        <!-- Кнопка для показа дополнительной информации -->
+        <button id="readMoreBtn">Read More</button>
 
-          <!-- Скрытый дополнительный контент -->
-          <div id="extraContent" style="display: none">
-            <p>
-              This is the extra content about the course. Here you can provide
-              more detailed information like syllabus, learning objectives, or
-              other relevant content.
-            </p>
-          </div>
+        <!-- Скрытый дополнительный контент -->
+        <div id="extraContent" style="display: none">
+          <p>
+            This is the extra content about the course. Here you can provide
+            more detailed information like syllabus, learning objectives, or
+            other relevant content.
+          </p>
         </div>
+      </div>
 
-        <div class="grid" style="grid-template-columns: 1.2fr 0.8fr">
-          <section class="card">
-            <h3>What you'll learn</h3>
-            <ul class="checks">
-              <li>Semantic HTML and accessible structure</li>
-              <li>Modern CSS layout (Flexbox & Grid)</li>
-              <li>Colors, typography, spacing system</li>
-              <li>Publishing to GitHub Pages</li>
-            </ul>
+      <div class="grid" style="grid-template-columns: 1.2fr 0.8fr">
+        <section class="card">
+          <h3>What you'll learn</h3>
+          <ul class="checks">
+            <li>Semantic HTML and accessible structure</li>
+            <li>Modern CSS layout (Flexbox & Grid)</li>
+            <li>Colors, typography, spacing system</li>
+            <li>Publishing to GitHub Pages</li>
+          </ul>
 
-            <h3>Weekly plan</h3>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Week</th>
-                  <th>Topic</th>
-                  <th>Outcome</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>HTML Essentials</td>
-                  <td>Build a multi‑page site</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>CSS Basics</td>
-                  <td>Apply consistent theme</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Layout</td>
-                  <td>Responsive grid & nav</td>
-                </tr>
-                <tr>
-                  <td>4</td>
-                  <td>Polish</td>
-                  <td>Publish & share</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
+          <h3>Weekly plan</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th>Topic</th>
+                <th>Outcome</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>HTML Essentials</td>
+                <td>Build a multi‑page site</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>CSS Basics</td>
+                <td>Apply consistent theme</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Layout</td>
+                <td>Responsive grid & nav</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Polish</td>
+                <td>Publish & share</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-          <aside class="card">
-            <h3>Enroll</h3>
-            <p>Self‑paced • 8–10 hours total</p>
-            <div class="course">
-              <div class="rating">
-                <span class="star">☆</span>
-                <span class="star">☆</span>
-                <span class="star">☆</span>
-                <span class="star">☆</span>
-                <span class="star">☆</span>
-              </div>
+        <aside class="card">
+          <h3>Enroll</h3>
+          <p>Self‑paced • 8–10 hours total</p>
+          <div class="course">
+            <div class="rating">
+              <span class="star">☆</span>
+              <span class="star">☆</span>
+              <span class="star">☆</span>
+              <span class="star">☆</span>
+              <span class="star">☆</span>
             </div>
-            <div class="enroll">
-              <a class="cta" href="#">Enroll now</a>
-              <a class="cta secondary" href="courses.html">Back to courses</a>
-            </div>
-            <h2 id="courseProgress">Your Progress</h2>
-            <button id="updateProgressBtn">Update Progress</button>
+          </div>
+          <div class="enroll">
+            <a class="cta" href="#">Enroll now</a>
+            <a class="cta secondary" href="courses.html">Back to courses</a>
+          </div>
+          <h2 id="courseProgress">Your Progress</h2>
+          <button id="updateProgressBtn">Update Progress</button>
 
-            <hr
-              style="
+          <hr style="
                 margin: 16px 0;
                 border: none;
                 border-top: 1px solid #e5e7eb;
-              "
-            />
-            <h3>Requirements</h3>
-            <ul class="checks">
-              <li>Computer with internet</li>
-            </ul>
-          </aside>
-        </div>
+              " />
+          <h3>Requirements</h3>
+          <ul class="checks">
+            <li>Computer with internet</li>
+          </ul>
+        </aside>
       </div>
-    </main>
+    </div>
+  </main>
 
-    <footer class="footer">
-      <div class="container" style="padding: 16px 0">
-        <div>© 2025 Znanija Land</div>
-        <div class="names">Team:SE-2404 Алиби • Султан</div>
-      </div>
-    </footer>
-    <script src="/upgrade.js"></script>
-    <script defer src="js/upgrade.js?v=2"></script>
-  </body>
+  <footer class="footer">
+    <div class="container" style="padding: 16px 0">
+      <div>© 2025 Znanija Land</div>
+      <div class="names">Team:SE-2404 Алиби • Султан</div>
+    </div>
+  </footer>
+  <!-- Registration modal (shared markup) -->
+  <div id="registerModal" class="modal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
+      <button class="modal-close" aria-label="Close registration">×</button>
+      <h3 id="registerTitle">Create an account</h3>
+      <form id="registerForm" class="modal-form">
+        <label>
+          Name
+          <input name="name" required />
+        </label>
+        <label>
+          Email
+          <input name="email" type="email" required />
+        </label>
+        <label>
+          Password
+          <input name="password" type="password" required minlength="6" />
+        </label>
+        <label class="row">
+          <input type="checkbox" name="autostartClock" /> Auto-start clock on load
+        </label>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button type="submit" class="cta">Register</button>
+          <button type="button" class="cta secondary modal-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Back to top -->
+  <button id="backToTop" class="back-top" title="Back to top">↑</button>
+  <script src="/upgrade.js"></script>
+  <script defer src="js/upgrade.js?v=2"></script>
+  <script src="js/script.js"></script>
+</body>
+
 </html>

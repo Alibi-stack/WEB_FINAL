@@ -1,88 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Znanija Land— Online Learning System</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="/upgrade.css" />
-    <link rel="stylesheet" href="css/upgrade.css?v=2" />
-  </head>
 
-  <body>
-    <header class="header">
-      <div class="container nav">
-        <a class="brand" href="index.html"
-          ><span class="logo" aria-hidden="true"></span> Znanija Land</a
-        >
-        <nav class="menu">
-          <a class="active" href="index.html">Home</a>
-          <a href="courses.html">Courses</a>
-          <a href="course-detail.html">Course</a>
-          <a href="about.html">About</a>
-        </nav>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Znanija Land— Online Learning System</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/upgrade.css" />
+  <link rel="stylesheet" href="css/upgrade.css?v=2" />
+  <link rel="stylesheet" href="css/dark-overrides.css" />
+</head>
+
+<body>
+  <!-- Preloader shown while page assets load -->
+  <div id="preloader" class="preloader" aria-hidden="false">
+    <div class="preloader-inner">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="preloader-text">Znanija Land</div>
+    </div>
+  </div>
+  <header class="header">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <div class="container nav">
+      <a class="brand" href="index.html"><span class="logo" aria-hidden="true"></span> Znanija Land</a>
+      <nav class="menu">
+        <a class="active" href="index.html">Home</a>
+        <a href="courses.html">Courses</a>
+        <a href="course-detail.html">Course</a>
+        <a href="about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button id="registerBtn" class="cta secondary">Register</button>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <main>
-      <section class="hero">
-        <button id="timeButton">Show Current Time</button>
-        <p id="timeDisplay">Time will appear here</p>
-        <div class="container">
-          <h1>It's easy to study with us</h1>
-          <p>
-            Video lessons at your own pace, weekly online sessions, and progress
-            tracking. No distractions, just results.
-          </p>
-          <div style="display: flex; gap: 10px; margin-top: 12px">
-            <a class="cta" href="courses.html">Browse Courses</a>
-            <a class="cta secondary" href="about.html">How it works</a>
+  <main>
+    <section class="hero">
+      <div class="time-theme-controls">
+        <button id="timeButton" class="control-btn">Show Current Time</button>
+        <button id="themeToggle" class="control-btn" aria-pressed="false">Toggle Theme</button>
+        <div id="timeDisplay" aria-live="polite" class="time-output" aria-hidden="false"></div>
+      </div>
+      <div class="container">
+        <h1 class="hero-title">It's easy to study with us</h1>
+        <p class="hero-subtitle">
+          Video lessons at your own pace, weekly online sessions, and progress
+          tracking. No distractions, just results.
+        </p>
+        <div style="display: flex; gap: 10px; margin-top: 12px">
+          <a class="cta" href="courses.html">Browse Courses</a>
+          <a class="cta secondary" href="about.html">How it works</a>
+        </div>
+
+        <div class="section kpis">
+          <div class="kpi">
+            <!-- data-target: numeric value to count to; data-suffix: optional suffix shown after number -->
+            <div class="num" data-target="1000" data-suffix="+">0</div>
+            <div class="lbl">Video lessons</div>
           </div>
-
-          <div class="section kpis">
-            <div class="kpi">
-              <div class="num">0+</div>
-              <div class="lbl">Video lessons</div>
-            </div>
-            <div class="kpi">
-              <div class="num">24/7</div>
-              <div class="lbl">Access anywhere</div>
-            </div>
-          </div>
-
-          <div class="section">
-            <h2 style="margin: 0 0 10px">Popular right now</h2>
-            <div class="grid">
-              <article class="card">
-                <h3>WEB Technologies</h3>
-                <p class="muted">HTML, CSS, and JS for absolute beginners.</p>
-                <a class="cta" href="course-detail.html">Start course</a>
-              </article>
-              <article class="card">
-                <h3>Design and Analysis of Algorithms</h3>
-                <p class="muted">
-                  Divide & Conquer, Dynamic Programming, Graph Algorithms.
-                </p>
-                <a class="cta" href="#">Start course</a>
-              </article>
-              <article class="card">
-                <h3>Foreign Language 1 (B1)</h3>
-                <p class="muted">Vocabulary and speaking practice.</p>
-                <a class="cta" href="#">Start course</a>
-              </article>
-            </div>
+          <div class="kpi">
+            <!-- animate to 24 then show 7 suffix -->
+            <div class="num" data-target="24" data-suffix="/7">0</div>
+            <div class="lbl">Access anywhere</div>
           </div>
         </div>
-      </section>
-    </main>
 
-    <footer class="footer">
-      <div class="container" style="padding: 16px 0">
-        <div>© 2025 Znanija Land</div>
-        <div class="names">Team:SE-2404 Алиби • Султан</div>
+        <div class="section">
+          <h2 style="margin: 0 0 10px">Popular right now</h2>
+          <div class="grid">
+            <article class="card">
+              <h3>WEB Technologies</h3>
+              <p class="muted">HTML, CSS, and JS for absolute beginners.</p>
+              <a class="cta" href="course-detail.html">Start course</a>
+            </article>
+            <article class="card">
+              <h3>Design and Analysis of Algorithms</h3>
+              <p class="muted">
+                Divide & Conquer, Dynamic Programming, Graph Algorithms.
+              </p>
+              <a class="cta" href="#">Start course</a>
+            </article>
+            <article class="card">
+              <h3>Foreign Language 1 (B1)</h3>
+              <p class="muted">Vocabulary and speaking practice.</p>
+              <a class="cta" href="#">Start course</a>
+            </article>
+          </div>
+        </div>
       </div>
-    </footer>
-    <script src="/upgrade.js"></script>
-    <script defer src="js/upgrade.js?v=2"></script>
-  </body>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container" style="padding: 16px 0">
+      <div>© 2025 Znanija Land</div>
+      <div class="names">Team:SE-2404 Алиби • Султан</div>
+
+    </div>
+    <form data-delay="1500" data-notify="Subscribed — check your email" style="max-width:420px;margin:20px auto;">
+      <input name="name" placeholder="Name" class="input" />
+      <button type="submit" class="cta">Submit</button>
+    </form>
+  </footer>
+  <!-- Registration modal -->
+  <div id="registerModal" class="modal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
+      <button class="modal-close" aria-label="Close registration">×</button>
+      <h3 id="registerTitle">Create an account</h3>
+      <form id="registerForm" class="modal-form">
+        <label>
+          Name
+          <input name="name" required />
+        </label>
+        <label>
+          Email
+          <input name="email" type="email" required />
+        </label>
+        <label>
+          Password
+          <input name="password" type="password" required minlength="6" />
+        </label>
+        <label class="row">
+          <input type="checkbox" name="autostartClock" /> Auto-start clock on load
+        </label>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button type="submit" class="cta">Register</button>
+          <button type="button" class="cta secondary modal-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Back to top -->
+  <button id="backToTop" class="back-top" title="Back to top">↑</button>
+  <script src="/upgrade.js"></script>
+  <script defer src="js/upgrade.js?v=2"></script>
+  <script src="js/script.js"></script>
+</body>
+
 </html>

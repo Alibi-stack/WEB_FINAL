@@ -1,0 +1,82 @@
+/* Dark mode overrides - simplified and focused
+   Sets a flat matte dark-blue page background and preserves dark surfaces
+   for key UI panels (cards, header, footer, modals). Kept intentionally
+   minimal to avoid fighting third-party CSS. */
+
+html.dark body {
+  background: #071428 !important; /* flat matte dark-blue */
+  color: var(--text) !important;
+}
+
+/* Main content should be transparent so the page background shows through */
+html.dark main,
+html.dark .section,
+html.dark .container,
+html.dark .grid,
+html.dark .masthead,
+html.dark .hero {
+  background: transparent !important;
+  color: var(--text) !important;
+}
+
+/* Keep panels/card surfaces readable */
+html.dark .header,
+html.dark .site-nav,
+html.dark .footer,
+html.dark footer.site-footer,
+html.dark .main-panel,
+html.dark .card,
+html.dark .modal-dialog,
+html.dark .modal,
+html.dark .kpi,
+html.dark .table,
+html.dark .faq-item,
+html.dark .field {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+/* Buttons keep accent styling */
+html.dark .cta,
+html.dark .btn,
+html.dark .btn.primary {
+  background: linear-gradient(90deg, var(--primary), var(--accent)) !important;
+  color: #fff !important;
+}
+
+/* Borders/separators */
+html.dark hr,
+html.dark .table th,
+html.dark .table td {
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Target the course detail sidebar card (Enroll) specifically — higher specificity
+   than generic .card rules in other stylesheets. This forces the panel background,
+   border and shadow to dark surfaces and neutralizes inline HR color. */
+html.dark aside.card {
+  background: var(--surface) !important;
+  border: 1px solid rgba(255,255,255,0.04) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.55) !important;
+}
+
+/* If an HR inside the card has inline border styles, override them */
+html.dark aside.card hr {
+  border: none !important;
+  border-top: 1px solid rgba(255,255,255,0.04) !important;
+  background: transparent !important;
+}
+
+/* Ensure headings and links in the card are readable */
+html.dark aside.card h3,
+html.dark aside.card p,
+html.dark aside.card .checks,
+html.dark aside.card .cta,
+html.dark aside.card .muted {
+  color: var(--text) !important;
+}
+
+/* Reduce any leftover light rounded container behind the card */
+html.dark .container > .grid > aside.card {
+  background-image: none !important;
+}

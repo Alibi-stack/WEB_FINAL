@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profile — Znanija Land</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="css/upgrade.css?v=2" />
+  <link rel="stylesheet" href="css/dark-overrides.css" />
+  <script>
+    try { if (localStorage.getItem('site-theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+  </script>
+</head>
+
+<body>
+  <header class="header">
+    <div class="container nav">
+      <a class="brand" href="index.html"><span class="logo" aria-hidden="true"></span> Znanija Land</a>
+      <nav class="menu">
+        <a href="index.html">Home</a>
+        <a href="courses.html">Courses</a>
+        <a href="course-detail.html">Course</a>
+        <a href="about.html">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button id="registerBtn" class="cta secondary">Register</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <h1>Your profile</h1>
+      <div id="profileCard" class="card" aria-live="polite">
+        <h3 id="profileName">—</h3>
+        <p id="profileEmail">—</p>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <a id="editProfile" class="cta" href="#">Edit</a>
+          <button id="signOutBtn" class="cta secondary">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container" style="padding: 16px 0">
+      <div>© 2025 Znanija Land</div>
+      <div class="names">Team:SE-2404 Алиби • Султан</div>
+    </div>
+  </footer>
+
+  <script>
+    // populate profile from localStorage
+    (function () {
+      function getCurrentUser() {
+        try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch (e) { return null; }
+      }
+      const user = getCurrentUser();
+      if (!user) {
+        // not signed in -> redirect to index (or login page)
+        try { window.location.href = 'index.html'; } catch (e) {}
+      } else {
+        document.getElementById('profileName').textContent = user.name || '—';
+        document.getElementById('profileEmail').textContent = user.email || '—';
+      }
+
+      document.getElementById('signOutBtn').addEventListener('click', function () {
+        try { localStorage.removeItem('currentUser'); } catch (e) {}
+        try { window.location.href = 'index.html'; } catch (e) {}
+      });
+    })();
+  </script>
+  <script src="js/script.js"></script>
+</body>
+
+</html>
