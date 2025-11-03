@@ -91,80 +91,6 @@ function filterCourses(searchTerm) {
   });
 }
 
-// Function to create and show suggestions
-function showSuggestions(searchTerm) {
-  const term = searchTerm.trim().toLowerCase();
-  if (!term) {
-    document.querySelector('.search-suggestions').style.display = 'none';
-    return;
-  }
-
-  // Find matching courses (limit to 5 suggestions)
-  const matches = courses
-      .filter(course => course.name.toLowerCase().includes(term))
-      .slice(0, 5);
-
-  const suggestions = document.querySelector('.search-suggestions');
-  
-  if (matches.length) {
-      const html = matches
-          .map(course => `
-              <div class="suggestion" data-name="${course.name}">
-                  <strong>${highlightSuggestion(course.name, term)}</strong>
-                  <small>${course.category}</small>
-              </div>
-          `)
-          .join('');
-      
-      suggestions.innerHTML = html;
-      suggestions.style.display = 'block';
-
-      // Add click handlers to suggestions
-      suggestions.querySelectorAll('.suggestion').forEach(div => {
-          div.addEventListener('click', () => {
-              const name = div.dataset.name;
-              const input = document.querySelector('.input');
-              input.value = name;
-              filterCourses(name);
-              highlightMatches(name);
-              suggestions.style.display = 'none';
-          });
-      });
-  } else {
-      suggestions.innerHTML = '<div class="suggestion">No matches found</div>';
-      suggestions.style.display = 'block';
-  }
-}
-
-// Helper to highlight matching text in suggestions
-function highlightSuggestion(text, term) {
-  const esc = escapeRegExp(term);
-  const regex = new RegExp(`(${esc})`, 'gi');
-  return text.replace(regex, '<mark class="highlight">$1</mark>');
-}
-
-// Update the existing event listener to include suggestions
-const searchInput = document.querySelector('.input');
-if (searchInput) {
-    searchInput.addEventListener('keyup', function() {
-        const searchTerm = this.value;
-        filterCourses(searchTerm);
-        if (!searchTerm.trim()) {
-            removeHighlights();
-        } else {
-            highlightMatches(searchTerm);
-        }
-        showSuggestions(searchTerm);
-    });
-
-    // Close suggestions when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.search')) {
-            document.querySelector('.search-suggestions').style.display = 'none';
-        }
-    });
-}
-
 // progress bar
 (function ($) {
   if (!$) {
@@ -248,6 +174,135 @@ if (searchInput) {
     observer.observe(c);
   });
 })();
+
+// --- Profile edit helpers (kept at top-level) ---
+function restoreProfileView() {
+  const card = document.getElementById('profileCard');
+  if (!card) return;
+  card.innerHTML = `
+    <h3 id="profileName">—</h3>
+    <p id="profileEmail">—</p>
+    <div style="margin-top:12px;display:flex;gap:8px;">
+      <a id="editProfile" class="cta" href="#">Edit</a>
+      <button id="signOutBtn" class="cta secondary">Sign out</button>
+    </div>`;
+
+  // repopulate from storage
+  try {
+    const user = getCurrentUser();
+    if (user) {
+      const n = document.getElementById('profileName');
+      const e = document.getElementById('profileEmail');
+      if (n) n.textContent = user.name || '—';
+      if (e) e.textContent = user.email || '—';
+    }
+  } catch (err) { /* ignore */ }
+
+  // rebind buttons
+  bindDirectEdit();
+  const sign = document.getElementById('signOutBtn');
+  if (sign) sign.addEventListener('click', function () { try { localStorage.removeItem('currentUser'); } catch (e) {} try { window.location.href = 'index.html'; } catch (e) {} });
+}
+
+function openProfileEditor() {
+  const user = getCurrentUser();
+  if (!user) { showToast('Not signed in'); return; }
+  const card = document.getElementById('profileCard');
+  if (!card) return;
+  const originalEmail = (user.email || '').toLowerCase();
+  card.innerHTML = `
+    <h3>Edit profile</h3>
+    <form id="profileEditForm" class="modal-form">
+      <label>Name<input name="name" required value="${escapeHtml(user.name || '')}" /></label>
+      <label>Email<input name="email" type="email" required value="${escapeHtml(user.email || '')}" /></label>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button type="submit" class="cta">Save</button>
+        <button type="button" id="profileCancel" class="cta secondary">Cancel</button>
+      </div>
+    </form>`;
+
+  const form = document.getElementById('profileEditForm');
+  const cancel = document.getElementById('profileCancel');
+
+  if (cancel) cancel.addEventListener('click', function () { restoreProfileView(); });
+
+  if (form) form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    const name = (form.name && form.name.value || '').trim();
+    const email = (form.email && form.email.value || '').trim();
+    if (!name || !email) { showToast('Name and email are required'); return; }
+
+    try {
+      const raw = localStorage.getItem('users');
+      const users = raw ? JSON.parse(raw) : [];
+      // check duplicate email (other user)
+      const dup = users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase() && u.email.toLowerCase() !== originalEmail);
+      if (dup) { showToast('Email already in use'); return; }
+
+      let updated = false;
+      const newUsers = users.map(u => {
+        if (u.email && u.email.toLowerCase() === originalEmail) {
+          updated = true;
+          return Object.assign({}, u, { name: name, email: email });
+        }
+        return u;
+      });
+      if (!updated) {
+        newUsers.push({ name: name, email: email, created: new Date().toISOString() });
+      }
+      localStorage.setItem('users', JSON.stringify(newUsers));
+      localStorage.setItem('currentUser', JSON.stringify({ name: name, email: email }));
+      showToast('Profile updated');
+      restoreProfileView();
+      try { updateAuthUI(); } catch (e) {}
+    } catch (err) {
+      console.warn('profile update error', err);
+      showToast('Failed to update profile');
+    }
+  });
+}
+
+// Delegated click handler for edit link (works for dynamic content)
+document.addEventListener('click', function (e) {
+  if (!e.target) return;
+  if (e.target.id === 'editProfile') {
+    // if the link has an href that navigates to another page, allow the navigation
+    try {
+      const href = e.target.getAttribute && e.target.getAttribute('href');
+      if (href && href.trim() !== '' && href.trim() !== '#') {
+        // allow default navigation
+        return;
+      }
+    } catch (err) { /* ignore and fallthrough */ }
+    e.preventDefault();
+    openProfileEditor();
+  }
+});
+
+// direct bind (for cases where element exists statically)
+function bindDirectEdit() {
+  const edit = document.getElementById('editProfile');
+  if (edit && !edit._profileBound) {
+    edit.addEventListener('click', function (ev) {
+      try {
+        const href = edit.getAttribute && edit.getAttribute('href');
+        if (href && href.trim() !== '' && href.trim() !== '#') {
+          // let link navigate
+          return;
+        }
+      } catch (err) {}
+      ev.preventDefault();
+      openProfileEditor();
+    });
+    edit._profileBound = true;
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bindDirectEdit);
+} else {
+  bindDirectEdit();
+}
 
 // ------------------------
 // Current time display and theme toggle
@@ -435,13 +490,82 @@ if (searchInput) {
 
   // --- Registration modal, autostart and back-to-top handlers ---
   (function () {
-    // open modal(s)
-    document.querySelectorAll('#registerBtn').forEach(btn => {
+    // open modal(s) via unified account button (Account -> choose Login/Register)
+    document.querySelectorAll('#accountBtn, #registerBtn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const modal = document.getElementById('registerModal');
-        if (!modal) return;
-        modal.setAttribute('aria-hidden', 'false');
-        modal.style.display = 'flex';
+        const acct = document.getElementById('accountModal');
+        if (acct) {
+          acct.setAttribute('aria-hidden', 'false');
+          acct.style.display = 'flex';
+          // if triggered from a Register button, show register panel
+          const regPanel = acct.querySelector('#registerPanel');
+          const logPanel = acct.querySelector('#loginPanel');
+          if (btn.id === 'registerBtn' && regPanel && logPanel) {
+            regPanel.style.display = 'block';
+            logPanel.style.display = 'none';
+          } else if (regPanel && logPanel) {
+            // default to login view
+            regPanel.style.display = 'none';
+            logPanel.style.display = 'block';
+          }
+          return;
+        }
+        // fallback: do nothing
+      });
+    });
+
+    // login button handler
+    document.querySelectorAll('#loginBtn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // prefer opening unified account modal when present
+        const acct = document.getElementById('accountModal');
+        if (acct) {
+          acct.setAttribute('aria-hidden', 'false');
+          acct.style.display = 'flex';
+          // show login panel
+          const regPanel = acct.querySelector('#registerPanel');
+          const logPanel = acct.querySelector('#loginPanel');
+          if (regPanel && logPanel) { regPanel.style.display = 'none'; logPanel.style.display = 'block'; }
+          return;
+        }
+        return;
+      });
+    });
+
+    // switch between login and register panels inside unified account modal
+    function showAccountPanel(which) {
+      const acct = document.getElementById('accountModal');
+      if (!acct) return;
+      const reg = acct.querySelector('#registerPanel');
+      const log = acct.querySelector('#loginPanel');
+      if (which === 'register') {
+        if (reg && log) { reg.style.display = 'block'; log.style.display = 'none'; }
+      } else {
+        if (reg && log) { reg.style.display = 'none'; log.style.display = 'block'; }
+      }
+    }
+
+    document.querySelectorAll('#switchToRegister, #showRegister').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const acct = document.getElementById('accountModal');
+        if (acct) {
+          acct.setAttribute('aria-hidden', 'false');
+          acct.style.display = 'flex';
+          showAccountPanel('register');
+          return;
+        }
+      });
+    });
+
+    document.querySelectorAll('#showLogin').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const acct = document.getElementById('accountModal');
+        if (acct) {
+          acct.setAttribute('aria-hidden', 'false');
+          acct.style.display = 'flex';
+          showAccountPanel('login');
+          return;
+        }
       });
     });
 
@@ -462,7 +586,9 @@ if (searchInput) {
 
     // submit registration forms (capture to run before global handler)
     document.addEventListener('submit', function (e) {
-      const form = e.target;
+      // ensure we have the form element (some browsers/handlers may give the submit button as target)
+      let form = e.target;
+      if (form && form.nodeName !== 'FORM' && form.closest) form = form.closest('form');
       if (!(form && form.id === 'registerForm')) return;
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -522,13 +648,17 @@ if (searchInput) {
 
     // login form handler (if present on a page)
     document.addEventListener('submit', function (e) {
-      const form = e.target;
+      // ensure we have the form element (target might be the button)
+      let form = e.target;
+      if (form && form.nodeName !== 'FORM' && form.closest) form = form.closest('form');
       if (!(form && form.id === 'loginForm')) return;
       e.preventDefault();
       e.stopImmediatePropagation();
 
       const email = (form.email && form.email.value || '').trim();
       const password = (form.password && form.password.value || '');
+
+      console.debug('loginForm submit', { email, passwordPresent: !!password });
 
       if (!email || !password) { showToast('Please enter email and password'); return; }
 
@@ -583,7 +713,7 @@ if (searchInput) {
             <button id="logoutBtn" class="cta secondary">Logout</button>
           </div>`;
       } else {
-        container.innerHTML = `<button id="registerBtn" class="cta secondary">Register</button>`;
+        container.innerHTML = `<button id="accountBtn" class="cta secondary">Account</button>`;
       }
     });
 
@@ -596,13 +726,24 @@ if (searchInput) {
       });
     });
 
-    // re-attach register open handlers to dynamically added button
-    document.querySelectorAll('#registerBtn').forEach(btn => {
+    // re-attach account open handlers to dynamically added button
+    document.querySelectorAll('#accountBtn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const modal = document.getElementById('registerModal');
-        if (!modal) return;
-        modal.setAttribute('aria-hidden', 'false');
-        modal.style.display = 'flex';
+        const acct = document.getElementById('accountModal');
+        if (acct) {
+          acct.setAttribute('aria-hidden', 'false');
+          acct.style.display = 'flex';
+          // default to login view
+          const regPanel = acct.querySelector('#registerPanel');
+          const logPanel = acct.querySelector('#loginPanel');
+          if (regPanel && logPanel) { regPanel.style.display = 'none'; logPanel.style.display = 'block'; }
+          return;
+        }
+        // If account modal isn't present on this page (not index), redirect to index and request the login panel
+        try {
+          const target = 'index.html#account=login';
+          window.location.href = target;
+        } catch (e) { /* ignore */ }
       });
     });
   }
@@ -621,11 +762,41 @@ if (searchInput) {
     updateAuthUI();
   }
 
+  // If the URL contains #account=login or #account=register, open the unified modal (index-only)
+  function processAccountHash() {
+    try {
+      const h = window.location.hash || '';
+      const m = h.match(/account=(login|register)/);
+      if (!m) return;
+      const acct = document.getElementById('accountModal');
+      if (!acct) return;
+      acct.setAttribute('aria-hidden', 'false');
+      acct.style.display = 'flex';
+      const regPanel = acct.querySelector('#registerPanel');
+      const logPanel = acct.querySelector('#loginPanel');
+      if (m[1] === 'register') {
+        if (regPanel && logPanel) { regPanel.style.display = 'block'; logPanel.style.display = 'none'; }
+      } else {
+        if (regPanel && logPanel) { regPanel.style.display = 'none'; logPanel.style.display = 'block'; }
+      }
+      // remove the hash without adding history entry
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    } catch (e) { /* ignore */ }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', processAccountHash);
+  } else {
+    processAccountHash();
+  }
+
   document.addEventListener(
     "submit",
     function (e) {
       const form = e.target;
       if (!(form && form.nodeName === "FORM")) return;
+      // do not intercept the dedicated profile edit page form; let it handle submission
+      if (form.id === 'profileEditPageForm') return;
 
       // debug
       console.log("form submit intercepted", form);

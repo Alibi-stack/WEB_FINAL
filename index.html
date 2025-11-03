@@ -9,10 +9,15 @@
   <link rel="stylesheet" href="/upgrade.css" />
   <link rel="stylesheet" href="css/upgrade.css?v=2" />
   <link rel="stylesheet" href="css/dark-overrides.css" />
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 </head>
 
 <body>
   <!-- Preloader shown while page assets load -->
+  <div id="scrollProgress" aria-hidden="true">
+    <div id="progressBar"></div>
+  </div>
   <div id="preloader" class="preloader" aria-hidden="false">
     <div class="preloader-inner">
       <div class="spinner" aria-hidden="true"></div>
@@ -31,7 +36,10 @@
         <a href="about.html">About</a>
       </nav>
       <div class="nav-actions">
-        <button id="registerBtn" class="cta secondary">Register</button>
+        <div style="display:flex;gap:8px;">
+          <button id="registerBtn" class="cta secondary">Register</button>
+          <button id="loginBtn" class="cta">Login</button>
+        </div>
       </div>
     </div>
   </header>
@@ -104,32 +112,39 @@
       <button type="submit" class="cta">Submit</button>
     </form>
   </footer>
-  <!-- Registration modal -->
-  <div id="registerModal" class="modal" aria-hidden="true">
-    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
-      <button class="modal-close" aria-label="Close registration">×</button>
-      <h3 id="registerTitle">Create an account</h3>
-      <form id="registerForm" class="modal-form">
-        <label>
-          Name
-          <input name="name" required />
-        </label>
-        <label>
-          Email
-          <input name="email" type="email" required />
-        </label>
-        <label>
-          Password
-          <input name="password" type="password" required minlength="6" />
-        </label>
-        <label class="row">
-          <input type="checkbox" name="autostartClock" /> Auto-start clock on load
-        </label>
-        <div style="display:flex;gap:8px;margin-top:12px;">
-          <button type="submit" class="cta">Register</button>
-          <button type="button" class="cta secondary modal-cancel">Cancel</button>
-        </div>
-      </form>
+  <!-- Account modal (Login / Register) -->
+  <div id="accountModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <button type="button" class="modal-close" aria-label="Close">×</button>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button id="showLogin" class="cta small">Sign In</button>
+        <button id="showRegister" class="cta small secondary">Create Account</button>
+      </div>
+
+      <div id="loginPanel">
+        <h2>Login</h2>
+        <form id="loginForm" class="modal-form">
+          <label>Email<input name="email" type="email" required /></label>
+          <label>Password<input name="password" type="password" required /></label>
+          <div style="margin-top:12px">
+            <button type="submit" class="cta">Sign In</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="registerPanel" style="display:none;">
+        <h3>Create an account</h3>
+        <form id="registerForm" class="modal-form">
+          <label>Name<input name="name" required /></label>
+          <label>Email<input name="email" type="email" required /></label>
+          <label>Password<input name="password" type="password" required minlength="6" /></label>
+          <label class="row"><input type="checkbox" name="autostartClock" /> Auto-start clock on load</label>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button type="submit" class="cta">Register</button>
+            <button type="button" class="cta secondary modal-cancel">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -138,6 +153,7 @@
   <script src="/upgrade.js"></script>
   <script defer src="js/upgrade.js?v=2"></script>
   <script src="js/script.js"></script>
+  <script src="/js/progress.js"></script>
 </body>
 
 </html>

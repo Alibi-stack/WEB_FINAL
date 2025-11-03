@@ -242,26 +242,28 @@ document.querySelectorAll(".rating .star").forEach((star, index, stars) => {
     });
   });
 });
-
+// Guarded handlers: only attach when elements exist to avoid runtime errors on pages
 const updateProgressBtn = document.getElementById("updateProgressBtn");
 const courseProgress = document.getElementById("courseProgress");
-
-updateProgressBtn.addEventListener("click", () => {
-  courseProgress.textContent = "Great job! You completed this module.";
-});
+if (updateProgressBtn && courseProgress) {
+  updateProgressBtn.addEventListener("click", () => {
+    courseProgress.textContent = "Great job! You completed this module.";
+  });
+}
 
 const readMoreBtn = document.getElementById("readMoreBtn");
 const extraContent = document.getElementById("extraContent");
-
-readMoreBtn.addEventListener("click", () => {
-  if (extraContent.style.display === "none") {
-    extraContent.style.display = "block";
-    readMoreBtn.textContent = "Read Less";
-  } else {
-    extraContent.style.display = "none";
-    readMoreBtn.textContent = "Read More";
-  }
-});
+if (readMoreBtn && extraContent) {
+  readMoreBtn.addEventListener("click", () => {
+    if (extraContent.style.display === "none") {
+      extraContent.style.display = "block";
+      readMoreBtn.textContent = "Read Less";
+    } else {
+      extraContent.style.display = "none";
+      readMoreBtn.textContent = "Read More";
+    }
+  });
+}
 
 const course = {
   name: "Web Development",
@@ -270,21 +272,24 @@ const course = {
 
   updateRating(newRating) {
     this.rating = newRating;
-    document.getElementById(
-      "courseRating"
-    ).textContent = `Rating: ${this.rating}`;
+    const el = document.getElementById("courseRating");
+    if (el) el.textContent = `Rating: ${this.rating}`;
   },
 };
 
-document.getElementById("courseName").textContent = course.name;
-document.getElementById("courseDescription").textContent = course.description;
-document.getElementById(
-  "courseRating"
-).textContent = `Rating: ${course.rating}`;
+const courseNameEl = document.getElementById("courseName");
+if (courseNameEl) courseNameEl.textContent = course.name;
+const courseDescriptionEl = document.getElementById("courseDescription");
+if (courseDescriptionEl) courseDescriptionEl.textContent = course.description;
+const courseRatingEl = document.getElementById("courseRating");
+if (courseRatingEl) courseRatingEl.textContent = `Rating: ${course.rating}`;
 
-document.getElementById("updateRatingBtn").addEventListener("click", () => {
-  course.updateRating(5);
-});
+const updateRatingBtn = document.getElementById("updateRatingBtn");
+if (updateRatingBtn) {
+  updateRatingBtn.addEventListener("click", () => {
+    course.updateRating(5);
+  });
+}
 
 const courses = [
   { name: "Web Development", description: "Learn HTML, CSS, and JavaScript" },
@@ -296,24 +301,30 @@ const courses = [
 ];
 
 const coursesList = document.getElementById("coursesList");
-courses.forEach((course) => {
-  const courseItem = document.createElement("li");
-  courseItem.textContent = `${course.name}: ${course.description}`;
-  coursesList.appendChild(courseItem);
-});
+if (coursesList) {
+  courses.forEach((course) => {
+    const courseItem = document.createElement("li");
+    courseItem.textContent = `${course.name}: ${course.description}`;
+    coursesList.appendChild(courseItem);
+  });
+}
 
 const courseNames = courses.map((course) => course.name);
 console.log(courseNames);
 
 const courseNamesList = document.getElementById("courseNamesList");
-courseNames.forEach((name) => {
-  const listItem = document.createElement("li");
-  listItem.textContent = name;
-  courseNamesList.appendChild(listItem);
-});
+if (courseNamesList) {
+  courseNames.forEach((name) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = name;
+    courseNamesList.appendChild(listItem);
+  });
+}
 
 const notificationSound = new Audio("notification.mp3");
-
-document.getElementById("playSoundBtn").addEventListener("click", () => {
-  notificationSound.play();
-});
+const playSoundBtn = document.getElementById("playSoundBtn");
+if (playSoundBtn) {
+  playSoundBtn.addEventListener("click", () => {
+    try { notificationSound.play(); } catch (e) { console.warn('sound play failed', e); }
+  });
+}
