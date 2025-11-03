@@ -1,5 +1,4 @@
 ﻿# WEB_FINAL
- MAIN LINK: https://alibi-stack.github.io/WEB_FINAL/
 
 A small multi-page static website project demonstrating a simple learning platform UI built with plain HTML, CSS and vanilla JavaScript. The project includes pages for listing courses, viewing course details, a registration/sign-in flow (demo, client-side only), and a lightweight dark/light theme toggle.
 
@@ -191,6 +190,7 @@ Open an issue or tell me what you'd like next — I can make the changes and upd
 ---
 
 Team: SE-2404 — Alibi (Алиби / Alibi Aibekuly) • Sultan (Султан)
+
 
 
 
