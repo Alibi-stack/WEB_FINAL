@@ -175,6 +175,101 @@ function filterCourses(searchTerm) {
   });
 })();
 
+// --- Course page helpers: Read More, Stars (rating), Update Progress ---
+(function () {
+  function courseIdKey() {
+    // derive a course-specific key from pathname + title to avoid collisions
+    try {
+      const p = (window.location.pathname || '').replace(/\W+/g, '-');
+      const t = (document.querySelector('h1') && document.querySelector('h1').textContent) || document.title || 'course';
+      const name = (t || 'course').toString().trim().toLowerCase().replace(/\W+/g, '-');
+      return 'zn_course_' + (p || '') + '::' + name;
+    } catch (e) { return 'zn_course_unknown'; }
+  }
+
+  function initReadMore() {
+    const btn = document.getElementById('readMoreBtn');
+    const extra = document.getElementById('extraContent');
+    if (!btn || !extra) return;
+    btn.addEventListener('click', function () {
+      const open = extra.style.display !== 'block';
+      extra.style.display = open ? 'block' : 'none';
+      btn.textContent = open ? 'Read Less' : 'Read More';
+    });
+  }
+
+  function initStars() {
+    const rating = document.querySelector('.rating');
+    if (!rating) return;
+    const stars = Array.from(rating.querySelectorAll('.star'));
+    if (!stars.length) return;
+    const key = courseIdKey() + '::rating';
+
+    function render(value) {
+      stars.forEach((s, idx) => {
+        if (idx < value) s.classList.add('selected');
+        else s.classList.remove('selected');
+        // update visual glyph: filled star for selected
+        s.textContent = (idx < value) ? '★' : '☆';
+      });
+    }
+
+    // restore
+    try {
+      const stored = localStorage.getItem(key);
+      const val = stored ? Number(stored) : 0;
+      if (val && !Number.isNaN(val)) render(val);
+    } catch (e) { /* ignore */ }
+
+    stars.forEach((s, idx) => {
+      s.style.cursor = 'pointer';
+      s.addEventListener('click', function () {
+        const value = idx + 1; // 1..5
+        render(value);
+        try { localStorage.setItem(key, String(value)); } catch (e) {}
+      });
+    });
+  }
+
+  function initProgress() {
+    const btn = document.getElementById('updateProgressBtn');
+    const output = document.getElementById('courseProgress');
+    if (!btn || !output) return;
+    const key = courseIdKey() + '::progress';
+
+    function render(pct) {
+      output.textContent = 'Your Progress: ' + pct + '%';
+      output.setAttribute('aria-valuenow', String(pct));
+    }
+
+    // restore
+    try {
+      const stored = localStorage.getItem(key);
+      const val = stored ? Number(stored) : 0;
+      render((!Number.isNaN(val) && val >= 0) ? val : 0);
+    } catch (e) { render(0); }
+
+    btn.addEventListener('click', function () {
+      try {
+        const cur = Number(localStorage.getItem(key) || '0') || 0;
+        const next = Math.min(100, cur + 10);
+        localStorage.setItem(key, String(next));
+        render(next);
+      } catch (e) { console.warn('updateProgress error', e); }
+    });
+  }
+
+  function initAll() {
+    initReadMore();
+    initStars();
+    initProgress();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAll);
+  else initAll();
+})();
+
+
 // --- Lightweight weather widget using Open-Meteo (no API key) ---
 (function () {
   const DEFAULT_COORDS = { latitude: 51.5074, longitude: -0.1278 }; // London fallback
