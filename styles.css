@@ -489,6 +489,23 @@ ul.checks li {
 .container.nav > .weather-widget .weather-icon { font-size: 16px; }
 .container.nav > .weather-widget .weather-temp { font-size: 14px; }
 
+/* Language selector */
+.lang-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+}
+.lang-select select {
+  background: var(--surface);
+  border: 1px solid rgba(15,23,42,0.06);
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.container.nav > .lang-select { margin-left: 6px; }
+
 /* Preloader styles */
 .preloader {
   position: fixed;

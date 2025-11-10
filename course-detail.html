@@ -40,7 +40,7 @@
     </div>
   </header>
 
-  <main class="section">
+<main class="section">
     <div class="container">
       <div class="time-theme-controls">
         <button id="timeButton" class="control-btn">Show Current Time</button>
@@ -49,14 +49,14 @@
       </div>
       <h1 style="margin-top: 0">WEB Technologies</h1>
       <div class="course-description">
-        <p>This is a brief description of the course.</p>
+        <p data-i18n="course_brief">This is a brief description of the course.</p>
 
         <!-- Кнопка для показа дополнительной информации -->
-        <button id="readMoreBtn">Read More</button>
+        <button id="readMoreBtn" data-i18n="read_more">Read More</button>
 
         <!-- Скрытый дополнительный контент -->
         <div id="extraContent" style="display: none">
-          <p>
+          <p data-i18n="course_extra">
             This is the extra content about the course. Here you can provide
             more detailed information like syllabus, learning objectives, or
             other relevant content.
@@ -66,7 +66,7 @@
 
       <div class="grid" style="grid-template-columns: 1.2fr 0.8fr">
         <section class="card">
-          <h3>What you'll learn</h3>
+          <h3 data-i18n="what_you_learn">What you'll learn</h3>
           <ul class="checks">
             <li>Semantic HTML and accessible structure</li>
             <li>Modern CSS layout (Flexbox & Grid)</li>
@@ -74,13 +74,13 @@
             <li>Publishing to GitHub Pages</li>
           </ul>
 
-          <h3>Weekly plan</h3>
+          <h3 data-i18n="weekly_plan">Weekly plan</h3>
           <table class="table">
             <thead>
               <tr>
-                <th>Week</th>
-                <th>Topic</th>
-                <th>Outcome</th>
+                <th data-i18n="th_week">Week</th>
+                <th data-i18n="th_topic">Topic</th>
+                <th data-i18n="th_outcome">Outcome</th>
               </tr>
             </thead>
             <tbody>
@@ -109,8 +109,8 @@
         </section>
 
         <aside class="card">
-          <h3>Enroll</h3>
-          <p>Self‑paced • 8–10 hours total</p>
+          <h3 data-i18n="enroll">Enroll</h3>
+          <p data-i18n="self_paced">Self‑paced • 8–10 hours total</p>
           <div class="course">
             <div class="rating">
               <span class="star">☆</span>
@@ -121,18 +121,18 @@
             </div>
           </div>
           <div class="enroll">
-            <a class="cta" href="#">Enroll now</a>
-            <a class="cta secondary" href="courses.html">Back to courses</a>
+            <a class="cta" href="#" data-i18n="enroll_now">Enroll now</a>
+            <a class="cta secondary" href="courses.html" data-i18n="back_to_courses">Back to courses</a>
           </div>
-          <h2 id="courseProgress">Your Progress</h2>
-          <button id="updateProgressBtn">Update Progress</button>
+          <h2 id="courseProgress" data-i18n="your_progress">Your Progress</h2>
+          <button id="updateProgressBtn" data-i18n="update_progress">Update Progress</button>
 
           <hr style="
                 margin: 16px 0;
                 border: none;
                 border-top: 1px solid #e5e7eb;
               " />
-          <h3>Requirements</h3>
+          <h3 data-i18n="requirements">Requirements</h3>
           <ul class="checks">
             <li>Computer with internet</li>
           </ul>
@@ -140,7 +140,7 @@
       </div>
     </div>
   </main>
-
+  
   <footer class="footer">
     <div class="container" style="padding: 16px 0">
       <div>© 2025 Znanija Land</div>

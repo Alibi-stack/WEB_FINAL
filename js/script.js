@@ -175,6 +175,295 @@ function filterCourses(searchTerm) {
   });
 })();
 
+// --- Lightweight i18n: EN / RU / KZ ---
+(function () {
+  const LOCALE_KEY = 'site_locale';
+  const available = ['en', 'ru', 'kz'];
+
+  const T = {
+    en: {
+      nav_home: 'Home',
+      nav_courses: 'Courses',
+      nav_course: 'Course',
+      nav_about: 'About',
+      account: 'Account',
+      register: 'Register',
+      login: 'Login',
+      show_time: 'Show Current Time',
+      hide_time: 'Hide Current Time',
+      light: 'Light',
+      dark: 'Dark',
+      read_more: 'Read More',
+      read_less: 'Read Less',
+      enroll_now: 'Enroll now',
+      back_to_courses: 'Back to courses',
+      your_progress_prefix: 'Your Progress:',
+      update_progress: 'Update Progress',
+      // additional keys
+      hero_title: "It's easy to study with us",
+      hero_subtitle: 'Video lessons at your own pace, weekly online sessions, and progress tracking. No distractions, just results.',
+      cta_browse: 'Browse Courses',
+      cta_how: 'How it works',
+      kpi_videos: 'Video lessons',
+      kpi_access: 'Access anywhere',
+      popular_now: 'Popular right now',
+      all_courses: 'All Courses',
+      search_placeholder: 'Search courses…',
+      course_brief: 'This is a brief description of the course.',
+      course_extra: 'This is the extra content about the course. Here you can provide more detailed information like syllabus, learning objectives, or other relevant content.',
+      what_you_learn: "What you'll learn",
+      weekly_plan: 'Weekly plan',
+      th_week: 'Week', th_topic: 'Topic', th_outcome: 'Outcome',
+      enroll: 'Enroll', self_paced: 'Self‑paced • 8–10 hours total',
+      requirements: 'Requirements',
+      about_title: 'About Znanija Land', about_brief: 'We present a simple online learning system focused on: clear lessons, personal goals and progress.',
+      our_method: 'Our method', m_videos: 'Short, focused videos (≤ 10 minutes)', m_practice: 'Practice after every lesson', m_weekly: 'Weekly live Q and A',
+      contact: 'Contact', contact_email: 'Email: support@znanijalearn.example', contact_telegram: 'Telegram: @likaacher', contact_address: 'Address: AITU, Astana, KZ',
+      your_profile: 'Your profile', edit: 'Edit', sign_out: 'Sign out',
+      // courses page cards
+      badge_web: 'Web', course_web_title: 'WEB Technologies', course_web_desc: 'Build your first 3 websites with semantic HTML & modern CSS.',
+      badge_data: 'Data', course_py_title: 'Intro to Python', course_py_desc: 'Learn variables, loops, functions and read/write files.',
+      badge_lang: 'Languages', course_eng_title: 'English for Tech', course_eng_desc: 'Level up your speaking and writing.',
+      badge_math: 'Math', course_math_title: 'Discrete Math Basics', course_math_desc: 'Logic, sets, graphs, and counting techniques.',
+      badge_spoiler: 'Spoiler', course_new_title: 'New subject', course_new_desc: 'Will be soon...', start_cta: 'Start',
+    },
+    ru: {
+      nav_home: 'Главная',
+      nav_courses: 'Курсы',
+      nav_course: 'Курс',
+      nav_about: 'О нас',
+      account: 'Аккаунт',
+      register: 'Регистрация',
+      login: 'Войти',
+      show_time: 'Показать текущее время',
+      hide_time: 'Скрыть время',
+      light: 'Светлая',
+      dark: 'Тёмная',
+      read_more: 'Подробнее',
+      read_less: 'Свернуть',
+      enroll_now: 'Записаться',
+      back_to_courses: 'К списку курсов',
+      your_progress_prefix: 'Ваш прогресс:',
+      update_progress: 'Обновить прогресс',
+      // additional
+      hero_title: 'Учиться с нами просто',
+      hero_subtitle: 'Видеоуроки в удобном темпе, еженедельные онлайн‑сессии и отслеживание прогресса. Ничто не отвлекает — только результат.',
+      cta_browse: 'Просмотреть курсы',
+      cta_how: 'Как это работает',
+      kpi_videos: 'Видеоуроки',
+      kpi_access: 'Доступ в любое время',
+      popular_now: 'Популярные сейчас',
+      all_courses: 'Все курсы',
+      search_placeholder: 'Поиск курсов…',
+      course_brief: 'Краткое описание курса.',
+      course_extra: 'Это дополнительная информация о курсе. Здесь можно указать программу, цели обучения и другие полезные сведения.',
+      what_you_learn: 'Что вы узнаете',
+      weekly_plan: 'Еженедельный план',
+      th_week: 'Неделя', th_topic: 'Тема', th_outcome: 'Результат',
+      enroll: 'Записаться', self_paced: 'Самостоятельно • 8–10 часов',
+      requirements: 'Требования',
+      about_title: 'О Znanija Land', about_brief: 'Мы представляем простую систему онлайн‑обучения, ориентированную на: понятные уроки, личные цели и прогресс.',
+      our_method: 'Наш метод', m_videos: 'Короткие фокусные видео (≤ 10 минут)', m_practice: 'Практика после каждого урока', m_weekly: 'Еженедельные живые вопросы и ответы',
+      contact: 'Контакты', contact_email: 'Email: support@znanijalearn.example', contact_telegram: 'Telegram: @likaacher', contact_address: 'Адрес: AITU, Astana, KZ',
+      your_profile: 'Ваш профиль', edit: 'Редактировать', sign_out: 'Выйти',
+      // courses page cards
+      badge_web: 'Web', course_web_title: 'WEB Технологии', course_web_desc: 'Постройте первые 3 сайта с семантическим HTML и современным CSS.',
+      badge_data: 'Data', course_py_title: 'Введение в Python', course_py_desc: 'Изучите переменные, циклы, функции и работу с файлами.',
+      badge_lang: 'Languages', course_eng_title: 'Английский для IT', course_eng_desc: 'Улучшите разговорные и письменные навыки.',
+      badge_math: 'Math', course_math_title: 'Основы дискретной математики', course_math_desc: 'Логика, множества, графы и комбинирование.',
+      badge_spoiler: 'Spoiler', course_new_title: 'Новый предмет', course_new_desc: 'Скоро появится...', start_cta: 'Начать',
+    },
+    kz: {
+      nav_home: 'Басты бет',
+      nav_courses: 'Курстар',
+      nav_course: 'Курс',
+      nav_about: 'Біз туралы',
+      account: 'Есептік жазба',
+      register: 'Тіркелу',
+      login: 'Кіру',
+      show_time: 'Ағымдағы уақытты көрсету',
+      hide_time: 'Уақытты жасыру',
+      light: 'Жарық',
+      dark: 'Қараңғы',
+      read_more: 'Толығырақ',
+      read_less: 'Жабу',
+      enroll_now: 'Тіркелу',
+      back_to_courses: 'Курстарға оралу',
+      your_progress_prefix: 'Сіздің прогресс:',
+      update_progress: 'Прогресті жаңарту',
+      // additional
+      hero_title: 'Бізбен оқу оңай',
+      hero_subtitle: 'Өз ырғағымен оқитын бейнесабақтар, апталық онлайн-сессиялар және прогресті бақылау. Назар аудармай, тек нәтиже.',
+      cta_browse: 'Курстарды көру',
+      cta_how: 'Қалай жұмыс істейді',
+      kpi_videos: 'Бейнесабақтар',
+      kpi_access: 'Кез келген жерде қол жетімді',
+      popular_now: 'Қазір танымал',
+      all_courses: 'Барлық курстар',
+      search_placeholder: 'Курс іздеу…',
+      course_brief: 'Курс туралы қысқаша сипаттама.',
+      course_extra: 'Курс туралы қосымша ақпарат. Мұнда оқу жоспары, оқу мақсаттары және басқа да пайдалы мәліметтер беруге болады.',
+      what_you_learn: 'Сіз не үйренесіз',
+      weekly_plan: 'Апталық жоспар',
+      th_week: 'Апта', th_topic: 'Тақырып', th_outcome: 'Нәтиже',
+      enroll: 'Тіркелу', self_paced: 'Өзіндік оқу • 8–10 сағат',
+      requirements: 'Талаптар',
+      about_title: 'Znanija Land туралы', about_brief: 'Біз қарапайым онлайн оқу жүйесін ұсынамыз: түсінікті сабақтар, жеке мақсаттар және прогресс.',
+      our_method: 'Біздің әдіс', m_videos: 'Қысқа, мақсатты бейнесабақтар (≤ 10 минут)', m_practice: 'Әр сабақтан кейін тәжірибе', m_weekly: 'Апталық тікелей Q&A',
+      contact: 'Байланыс', contact_email: 'Email: support@znanijalearn.example', contact_telegram: 'Telegram: @likaacher', contact_address: 'Мекен-жайы: AITU, Astana, KZ',
+      your_profile: 'Профиліңіз', edit: 'Өзгерту', sign_out: 'Шығу',
+      // courses page cards
+      badge_web: 'Web', course_web_title: 'WEB Технологиялары', course_web_desc: 'Семантикалық HTML және заманауи CSS көмегімен алғашқы 3 веб-сайтыңызды жасаңыз.',
+      badge_data: 'Data', course_py_title: 'Python-ға кіріспе', course_py_desc: 'Айнымалыларды, циклдерді, функцияларды және файлдармен жұмыс жасауды үйреніңіз.',
+      badge_lang: 'Languages', course_eng_title: 'Технологиялар үшін ағылшын', course_eng_desc: 'Сөйлеу мен жазу дағдыларын жетілдіріңіз.',
+      badge_math: 'Math', course_math_title: 'Дискреттік математиканың негіздері', course_math_desc: 'Логика, жиындар, графтар және есептеу тәсілдері.',
+      badge_spoiler: 'Spoiler', course_new_title: 'Жаңа пән', course_new_desc: 'Жақында пайда болады...', start_cta: 'Бастау',
+    }
+  };
+
+  function getLocale() {
+    try {
+      const saved = localStorage.getItem(LOCALE_KEY);
+      if (saved && available.includes(saved)) return saved;
+    } catch (e) {}
+    const nav = (navigator.language || navigator.userLanguage || 'en').slice(0,2);
+    if (available.includes(nav)) return nav;
+    return 'en';
+  }
+
+  function saveLocale(loc) {
+    try { localStorage.setItem(LOCALE_KEY, loc); } catch (e) {}
+  }
+
+  function translatePage(loc) {
+    const dict = T[loc] || T.en;
+
+    // header menu: rely on order of links
+    document.querySelectorAll('.container.nav').forEach(container => {
+      const menu = container.querySelector('.menu');
+      if (menu) {
+        const links = Array.from(menu.querySelectorAll('a'));
+        if (links[0]) links[0].textContent = dict.nav_home;
+        if (links[1]) links[1].textContent = dict.nav_courses;
+        if (links[2]) links[2].textContent = dict.nav_course;
+        if (links[3]) links[3].textContent = dict.nav_about;
+      }
+
+      // nav-actions button text(s)
+      const actions = container.querySelector('.nav-actions');
+      if (actions) {
+        const acctBtn = actions.querySelector('#accountBtn');
+        if (acctBtn) acctBtn.textContent = dict.account;
+        // register/login on index page
+        const registerBtn = actions.querySelector('#registerBtn');
+        const loginBtn = actions.querySelector('#loginBtn');
+        if (registerBtn) registerBtn.textContent = dict.register;
+        if (loginBtn) loginBtn.textContent = dict.login;
+      }
+
+      // weather widget and language selector remain unaffected
+    });
+
+    // global buttons
+    const timeBtn = document.getElementById('timeButton');
+    if (timeBtn) {
+      // preserve state if it currently shows Hide
+      const isShowing = timeBtn.textContent && timeBtn.textContent.toLowerCase().indexOf('hide') !== -1;
+      timeBtn.textContent = isShowing ? dict.hide_time : dict.show_time;
+    }
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+      // detect current theme
+      const isDark = document.documentElement.classList.contains('dark');
+      themeBtn.textContent = isDark ? dict.dark : dict.light;
+    }
+
+    // course page specific
+    const readBtn = document.getElementById('readMoreBtn');
+    if (readBtn) {
+      readBtn.textContent = (document.getElementById('extraContent') && document.getElementById('extraContent').style.display === 'block') ? dict.read_less : dict.read_more;
+    }
+
+    const enrollButtons = document.querySelectorAll('aside.card .enroll a.cta');
+    if (enrollButtons && enrollButtons.length) {
+      if (enrollButtons[0]) enrollButtons[0].textContent = dict.enroll_now;
+      if (enrollButtons[1]) enrollButtons[1].textContent = dict.back_to_courses;
+    }
+
+    const progressEl = document.getElementById('courseProgress');
+    if (progressEl) {
+      // read numeric part if present
+      const cur = (progressEl.textContent || '').match(/(\d+)%/);
+      const pct = cur ? cur[1] : '';
+      progressEl.textContent = dict.your_progress_prefix + (pct ? ' ' + pct + '%' : '');
+    }
+const updateBtn = document.getElementById('updateProgressBtn');
+    if (updateBtn) updateBtn.textContent = dict.update_progress;
+
+    // document title: if it contains known words, replace minimal
+    try {
+      document.title = document.title.replace(/Home|Courses|Course|About|Курсы|Курс|О нас|Главная/gi, function(m){
+        // map to nav values if present
+        const map = {
+          'Home': dict.nav_home, 'Courses': dict.nav_courses, 'Course': dict.nav_course, 'About': dict.nav_about,
+          'Главная': dict.nav_home, 'Курсы': dict.nav_courses, 'Курс': dict.nav_course, 'О нас': dict.nav_about
+        };
+        return map[m] || m;
+      });
+    } catch (e) {}
+
+      // Generic: elements with data-i18n attribute
+      try {
+        document.querySelectorAll('[data-i18n]').forEach(function(el){
+          const key = el.getAttribute('data-i18n');
+          if (!key) return;
+          if (dict[key] !== undefined) el.textContent = dict[key];
+        });
+
+        // placeholders
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){
+          const key = el.getAttribute('data-i18n-placeholder');
+          if (!key) return;
+          if (dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
+        });
+      } catch (e) { /* ignore */ }
+  }
+
+  function injectLangSelector() {
+    document.querySelectorAll('.container.nav').forEach(container => {
+      if (container.querySelector('.lang-select')) return; // already
+      const actions = container.querySelector('.nav-actions');
+      const wrap = document.createElement('div');
+      wrap.className = 'lang-select';
+      const sel = document.createElement('select');
+      sel.setAttribute('aria-label', 'Language');
+      const opts = [{v:'en', t:'EN'}, {v:'ru', t:'RU'}, {v:'kz', t:'KZ'}];
+      opts.forEach(o => { const option = document.createElement('option'); option.value = o.v; option.textContent = o.t; sel.appendChild(option); });
+      wrap.appendChild(sel);
+      // insert before actions so it's visible and not overwritten
+      if (actions) container.insertBefore(wrap, actions);
+
+      const loc = getLocale();
+      sel.value = loc;
+      sel.addEventListener('change', function () {
+        const val = sel.value;
+        if (!available.includes(val)) return;
+        saveLocale(val);
+        translatePage(val);
+      });
+    });
+  }
+
+  // init
+  const initial = getLocale();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { injectLangSelector(); translatePage(initial); });
+  } else { injectLangSelector(); translatePage(initial); }
+
+})();
+
+
+
 // --- Course page helpers: Read More, Stars (rating), Update Progress ---
 (function () {
   function courseIdKey() {
