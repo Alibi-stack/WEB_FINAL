@@ -89,6 +89,62 @@ textarea:focus {
   color: var(--primary);
 }
 
+/* Mobile / responsive nav toggle */
+.nav .nav-toggle {
+  display: none;
+  background: transparent;
+  border: 0;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+.nav .nav-toggle .hamburger {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  position: relative;
+}
+.nav .nav-toggle .hamburger::before,
+.nav .nav-toggle .hamburger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+}
+.nav .nav-toggle .hamburger::before { top: -7px; }
+.nav .nav-toggle .hamburger::after { top: 7px; }
+
+@media (max-width: 780px) {
+  /* hide normal inline menu on small screens */
+  .menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: var(--surface);
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 6px 24px rgba(15,23,42,0.06);
+  }
+  .menu a { display: block; padding: 8px 6px; }
+  .menu.open { display: flex; }
+
+  .nav { position: relative; }
+  .nav .nav-toggle { display: inline-flex; }
+
+  /* hide actions by default and reveal when menu opened */
+  .nav .nav-actions { display: none; }
+  .menu.open ~ .nav-actions { display: flex; gap: 8px; margin-top: 8px; }
+}
+
 .hero {
   background: linear-gradient(180deg, #eef3ff, transparent);
   padding: 52px 0 28px;
@@ -398,6 +454,40 @@ ul.checks li {
   color: var(--text);
   margin-left: 4px;
 }
+
+/* Weather widget in header */
+.weather-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text);
+}
+.weather-widget .weather-icon {
+  font-size: 18px;
+}
+.weather-widget .weather-temp {
+  font-weight: 800;
+}
+.weather-widget .weather-refresh {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px;
+  color: var(--muted);
+}
+.weather-widget .weather-refresh:hover { color: var(--text); }
+
+@media (max-width: 780px) {
+  /* keep weather inside nav-actions hidden by default on small screens (menu controls visibility) */
+  .weather-widget { font-size: 13px; }
+}
+
+/* Ensure weather widget (inserted as sibling) sits nicely in header */
+.container.nav > .weather-widget { margin-left: 10px; }
+.container.nav > .weather-widget .weather-icon { font-size: 16px; }
+.container.nav > .weather-widget .weather-temp { font-size: 14px; }
 
 /* Preloader styles */
 .preloader {

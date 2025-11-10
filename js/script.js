@@ -175,6 +175,178 @@ function filterCourses(searchTerm) {
   });
 })();
 
+// --- Lightweight weather widget using Open-Meteo (no API key) ---
+(function () {
+  const DEFAULT_COORDS = { latitude: 51.5074, longitude: -0.1278 }; // London fallback
+
+  function codeToEmoji(code) {
+    // Open-Meteo weathercode mapping (simplified)
+    if (code === 0) return '☀️';
+    if (code === 1 || code === 2 || code === 3) return '⛅';
+    if (code === 45 || code === 48) return '🌫️';
+    if ((code >= 51 && code <= 57) || (code >= 61 && code <= 67)) return '🌧️';
+    if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) return '❄️';
+    if (code >= 95) return '⛈️';
+    return '🌤️';
+  }
+
+  function render(widget, data) {
+    if (!widget) return;
+    if (!data) {
+      widget.querySelector('.weather-icon').textContent = '';
+      widget.querySelector('.weather-temp').textContent = '--°';
+      widget.querySelector('.weather-city').textContent = '';
+      return;
+    }
+    const emoji = codeToEmoji(data.weathercode);
+    widget.querySelector('.weather-icon').textContent = emoji;
+    const t = Math.round(data.temperature);
+    widget.querySelector('.weather-temp').textContent = t + '°C';
+    if (data.name) widget.querySelector('.weather-city').textContent = data.name;
+  }
+
+  function fetchWeather(lat, lon) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius&windspeed_unit=kmh`;
+    return fetch(url).then(r => {
+      if (!r.ok) throw new Error('weather fetch failed');
+      return r.json();
+    }).then(json => {
+      if (!json || !json.current_weather) throw new Error('no current weather');
+      return {
+        temperature: json.current_weather.temperature,
+        weathercode: json.current_weather.weathercode,
+        windspeed: json.current_weather.windspeed
+      };
+    });
+  }
+
+  function initWeatherFor(container) {
+    try {
+      const actions = container.querySelector('.nav-actions');
+      if (!actions) return;
+      // don't place widget inside .nav-actions (it gets overwritten by updateAuthUI)
+      if (container.querySelector('#weatherWidget')) return; // already added
+
+      const w = document.createElement('div');
+      w.id = 'weatherWidget';
+      w.className = 'weather-widget';
+      w.innerHTML = `<button type="button" class="weather-refresh" title="Refresh weather">⟳</button><span class="weather-icon" aria-hidden="true"></span><span class="weather-temp">--°</span><span class="weather-city" style="margin-left:6px;color:var(--muted);font-weight:600;font-size:13px"></span>`;
+      // insert as a sibling before the .nav-actions element so it's not removed by scripts
+      container.insertBefore(w, actions);
+
+      const refresh = w.querySelector('.weather-refresh');
+      refresh.addEventListener('click', function () { runFetch(w); });
+
+      // attempt geolocation first, then fallback to OPEN-METEO via default coords
+      function runFetch(widgetEl) {
+        render(widgetEl, null);
+        if (navigator.geolocation) {
+          let called = false;
+          const timer = setTimeout(() => {
+            if (!called) {
+              called = true;
+              fetchWeather(DEFAULT_COORDS.latitude, DEFAULT_COORDS.longitude).then(d => render(widgetEl, d)).catch(() => render(widgetEl, null));
+            }
+          }, 4000);
+
+          navigator.geolocation.getCurrentPosition(function (pos) {
+            if (called) return;
+            called = true;
+            clearTimeout(timer);
+            fetchWeather(pos.coords.latitude, pos.coords.longitude).then(d => render(widgetEl, d)).catch(() => {
+              // fallback to default
+              fetchWeather(DEFAULT_COORDS.latitude, DEFAULT_COORDS.longitude).then(dd => render(widgetEl, dd)).catch(() => render(widgetEl, null));
+            });
+          }, function (err) {
+            if (called) return;
+            called = true;
+            clearTimeout(timer);
+            // permission denied or error -> fallback
+            fetchWeather(DEFAULT_COORDS.latitude, DEFAULT_COORDS.longitude).then(d => render(widgetEl, d)).catch(() => render(widgetEl, null));
+          }, { timeout: 4000 });
+        } else {
+          // no geolocation available
+          fetchWeather(DEFAULT_COORDS.latitude, DEFAULT_COORDS.longitude).then(d => render(widgetEl, d)).catch(() => render(widgetEl, null));
+        }
+      }
+
+      // initial load
+      runFetch(w);
+    } catch (e) {
+      console.warn('initWeatherFor error', e);
+    }
+  }
+
+  function initWeather() {
+    document.querySelectorAll('.container.nav').forEach(initWeatherFor);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initWeather);
+  else initWeather();
+})();
+
+
+// --- Responsive nav toggle: injects a hamburger button and toggles the .menu.open class ---
+(function () {
+  function initNavToggles() {
+    document.querySelectorAll('.container.nav').forEach(function (container) {
+      try {
+        const menu = container.querySelector('.menu');
+        if (!menu) return;
+
+        // ensure menu has an id for aria-controls
+        if (!menu.id) menu.id = 'nav-menu-' + Math.random().toString(36).slice(2, 8);
+
+        // don't double-insert
+        if (container.querySelector('.nav-toggle')) return;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'nav-toggle';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-controls', menu.id);
+        const ham = document.createElement('span');
+        ham.className = 'hamburger';
+        btn.appendChild(ham);
+
+        // insert before the menu so it's visually near the brand/menu
+        container.insertBefore(btn, menu);
+
+        function setOpen(open) {
+          if (open) {
+            menu.classList.add('open');
+            btn.setAttribute('aria-expanded', 'true');
+          } else {
+            menu.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+          }
+        }
+
+        btn.addEventListener('click', function (ev) {
+          ev.stopPropagation();
+          setOpen(!menu.classList.contains('open'));
+        });
+
+        // close when clicking outside
+        document.addEventListener('click', function (ev) {
+          if (!menu.classList.contains('open')) return;
+          if (!container.contains(ev.target)) setOpen(false);
+        });
+
+        // close when a navigation link is clicked
+        menu.querySelectorAll('a').forEach(function (a) {
+          a.addEventListener('click', function () { setOpen(false); });
+        });
+      } catch (err) {
+        console.warn('nav toggle init error', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initNavToggles);
+  else initNavToggles();
+})();
+
 // --- Profile edit helpers (kept at top-level) ---
 function restoreProfileView() {
   const card = document.getElementById('profileCard');
@@ -201,7 +373,7 @@ function restoreProfileView() {
   // rebind buttons
   bindDirectEdit();
   const sign = document.getElementById('signOutBtn');
-  if (sign) sign.addEventListener('click', function () { try { localStorage.removeItem('currentUser'); } catch (e) {} try { window.location.href = 'index.html'; } catch (e) {} });
+  if (sign) sign.addEventListener('click', function () { try { localStorage.removeItem('currentUser'); } catch (e) { } try { window.location.href = 'index.html'; } catch (e) { } });
 }
 
 function openProfileEditor() {
@@ -254,7 +426,7 @@ function openProfileEditor() {
       localStorage.setItem('currentUser', JSON.stringify({ name: name, email: email }));
       showToast('Profile updated');
       restoreProfileView();
-      try { updateAuthUI(); } catch (e) {}
+      try { updateAuthUI(); } catch (e) { }
     } catch (err) {
       console.warn('profile update error', err);
       showToast('Failed to update profile');
@@ -290,7 +462,7 @@ function bindDirectEdit() {
           // let link navigate
           return;
         }
-      } catch (err) {}
+      } catch (err) { }
       ev.preventDefault();
       openProfileEditor();
     });
@@ -348,7 +520,7 @@ if (document.readyState === 'loading') {
     const theme = isDark ? 'dark' : 'light';
     try {
       localStorage.setItem('site-theme', theme);
-    } catch (e) {}
+    } catch (e) { }
     applyTheme(theme);
   }
 
@@ -359,7 +531,7 @@ if (document.readyState === 'loading') {
         applyTheme(saved);
         return;
       }
-    } catch (e) {}
+    } catch (e) { }
     // if no saved preference, use system prefers-color-scheme
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(prefersDark ? 'dark' : 'light');
@@ -394,7 +566,7 @@ if (document.readyState === 'loading') {
           timeBtn.textContent = 'Hide Current Time';
           shown = true;
         }
-      } catch (e) {}
+      } catch (e) { }
 
       // toggle on click
       timeBtn.addEventListener('click', function () {
@@ -622,7 +794,7 @@ if (document.readyState === 'loading') {
           users.push(newUser);
           localStorage.setItem('users', JSON.stringify(users));
           // set current user
-          try { localStorage.setItem('currentUser', JSON.stringify({ name: newUser.name, email: newUser.email })); } catch (e) {}
+          try { localStorage.setItem('currentUser', JSON.stringify({ name: newUser.name, email: newUser.email })); } catch (e) { }
 
           // autostart checkbox
           if (form.autostartClock && form.autostartClock.checked) {
@@ -640,9 +812,9 @@ if (document.readyState === 'loading') {
         const modal = form.closest('.modal');
         closeModal(modal);
         // update header UI to show logged-in user
-        try { updateAuthUI(); } catch (e) {}
+        try { updateAuthUI(); } catch (e) { }
         // redirect to profile page
-        try { window.location.href = 'profile.html'; } catch (e) {}
+        try { window.location.href = 'profile.html'; } catch (e) { }
       }, 900);
     }, true);
 
@@ -676,8 +848,8 @@ if (document.readyState === 'loading') {
           localStorage.setItem('currentUser', JSON.stringify({ name: found.name, email: found.email }));
           restoreButton(form.querySelector('button[type="submit"]'));
           showToast('Signed in');
-          try { updateAuthUI(); } catch (e) {}
-          try { window.location.href = 'profile.html'; } catch (e) {}
+          try { updateAuthUI(); } catch (e) { }
+          try { window.location.href = 'profile.html'; } catch (e) { }
         } catch (err) { console.warn('login error', err); restoreButton(form.querySelector('button[type="submit"]')); showToast('Sign-in failed'); }
       }, 700);
     }, true);
@@ -720,7 +892,7 @@ if (document.readyState === 'loading') {
     // attach logout handler
     document.querySelectorAll('#logoutBtn').forEach(btn => {
       btn.addEventListener('click', () => {
-        try { localStorage.removeItem('currentUser'); } catch (e) {}
+        try { localStorage.removeItem('currentUser'); } catch (e) { }
         showToast('Logged out');
         updateAuthUI();
       });
